@@ -387,14 +387,25 @@
                 <div class="form-group">
                     <label for="webdav-url">服务器地址:</label>
                     <input type="text" id="webdav-url" class="form-input" placeholder="请输入 WebDAV 服务器地址">
+                    <small class="form-hint">例如: https://dav.jianguoyun.com/dav/cloudpad/</small>
                 </div>
                 <div class="form-group">
                     <label for="webdav-username">用户名:</label>
                     <input type="text" id="webdav-username" class="form-input" placeholder="请输入用户名">
                 </div>
                 <div class="form-group">
-                    <label for="webdav-password">密码:</label>
-                    <input type="password" id="webdav-password" class="form-input" placeholder="请输入密码">
+                    <label for="webdav-password">应用密码:</label>
+                    <input type="password" id="webdav-password" class="form-input" placeholder="请输入应用密码">
+                    <small class="form-hint">请在坚果云官网生成专用应用密码</small>
+                </div>
+                <div class="form-note">
+                    <p><strong>使用说明:</strong></p>
+                    <ol>
+                        <li>登录坚果云官网，进入「账户信息」→「安全选项」</li>
+                        <li>在「第三方应用管理」中添加应用密码</li>
+                        <li>在坚果云中创建 "cloudpad" 文件夹</li>
+                        <li>服务器地址格式: https://dav.jianguoyun.com/dav/cloudpad/</li>
+                    </ol>
                 </div>
                 <div class="form-group">
                     <label>

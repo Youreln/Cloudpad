@@ -1070,9 +1070,9 @@ function hideCloudModal() {
 // 加载 WebDAV 配置
 function loadWebdavConfig() {
     const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
-    elements.webdavUrl.value = config.url || 'https://dav.jianguoyun.com/dav/';
+    elements.webdavUrl.value = config.url || 'https://dav.jianguoyun.com/dav/cloudpad/';
     elements.webdavUsername.value = config.username || 'youreln@qq.com';
-    elements.webdavPassword.value = config.password || 'a9xcr5te6j5bzwpj';
+    elements.webdavPassword.value = config.password || '';
     elements.autoBackup.checked = config.autoBackup || false;
     elements.showFiles.checked = config.showFiles || false;
     
@@ -1244,36 +1244,58 @@ function webdavListFiles(url, username, password) {
         xhr.open('PROPFIND', url, true);
         xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
         xhr.setRequestHeader('Depth', '1');
+        xhr.setRequestHeader('Content-Type', 'application/xml');
         
         xhr.onload = function() {
+            console.log('WebDAV 列表响应状态:', xhr.status);
+            console.log('WebDAV 列表响应内容:', xhr.responseText);
+            
             if (xhr.status === 207) {
-                // 解析 XML 响应
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(xhr.responseText, 'application/xml');
-                const responses = doc.getElementsByTagName('response');
-                const files = [];
-                
-                for (let i = 0; i < responses.length; i++) {
-                    const response = responses[i];
-                    const href = response.getElementsByTagName('href')[0].textContent;
-                    const name = href.split('/').pop();
+                try {
+                    // 解析 XML 响应
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xhr.responseText, 'application/xml');
+                    const responses = doc.getElementsByTagName('response');
+                    const files = [];
                     
-                    // 只显示 HTML 文件
-                    if (name && name.endsWith('.html')) {
-                        files.push({ name });
+                    for (let i = 0; i < responses.length; i++) {
+                        const response = responses[i];
+                        const href = response.getElementsByTagName('href')[0].textContent;
+                        const name = href.split('/').pop();
+                        
+                        // 只显示 HTML 文件
+                        if (name && name.endsWith('.html')) {
+                            files.push({ name });
+                        }
                     }
+                    
+                    resolve(files);
+                } catch (error) {
+                    console.error('解析 XML 失败:', error);
+                    reject(new Error('解析文件列表失败'));
                 }
-                
-                resolve(files);
+            } else if (xhr.status === 401) {
+                reject(new Error('认证失败，请检查用户名和密码'));
+            } else if (xhr.status === 403) {
+                reject(new Error('权限不足，请检查服务器地址和文件夹权限'));
+            } else if (xhr.status === 404) {
+                reject(new Error('服务器地址不存在，请检查地址是否正确'));
             } else {
-                reject(new Error('WebDAV 列表失败: ' + xhr.status));
+                reject(new Error('WebDAV 列表失败: ' + xhr.status + ' ' + xhr.statusText));
             }
         };
         
         xhr.onerror = function() {
-            reject(new Error('WebDAV 连接错误'));
+            console.error('WebDAV 连接错误');
+            reject(new Error('无法连接到服务器，请检查网络连接和服务器地址'));
         };
         
+        xhr.ontimeout = function() {
+            console.error('WebDAV 连接超时');
+            reject(new Error('连接超时，请检查网络连接'));
+        };
+        
+        xhr.timeout = 10000; // 10秒超时
         xhr.send();
     });
 }
@@ -1284,22 +1306,40 @@ function webdavUploadFile(url, username, password, fileName, content) {
         const xhr = new XMLHttpRequest();
         const fileUrl = url + fileName;
         
+        console.log('上传文件:', fileUrl);
+        
         xhr.open('PUT', fileUrl, true);
         xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
         xhr.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+        xhr.setRequestHeader('Content-Length', content.length);
         
         xhr.onload = function() {
+            console.log('上传响应状态:', xhr.status, xhr.statusText);
+            
             if (xhr.status === 201 || xhr.status === 204) {
                 resolve();
+            } else if (xhr.status === 401) {
+                reject(new Error('认证失败，请检查用户名和密码'));
+            } else if (xhr.status === 403) {
+                reject(new Error('权限不足，无法上传文件'));
+            } else if (xhr.status === 404) {
+                reject(new Error('服务器地址不存在，请检查地址是否正确'));
             } else {
-                reject(new Error('WebDAV 上传失败: ' + xhr.status));
+                reject(new Error('WebDAV 上传失败: ' + xhr.status + ' ' + xhr.statusText));
             }
         };
         
         xhr.onerror = function() {
-            reject(new Error('WebDAV 连接错误'));
+            console.error('上传连接错误');
+            reject(new Error('无法连接到服务器，请检查网络连接'));
         };
         
+        xhr.ontimeout = function() {
+            console.error('上传超时');
+            reject(new Error('上传超时，请检查网络连接'));
+        };
+        
+        xhr.timeout = 30000; // 30秒超时
         xhr.send(content);
     });
 }
@@ -1310,21 +1350,38 @@ function webdavDownloadFile(url, username, password, fileName) {
         const xhr = new XMLHttpRequest();
         const fileUrl = url + fileName;
         
+        console.log('下载文件:', fileUrl);
+        
         xhr.open('GET', fileUrl, true);
         xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
         
         xhr.onload = function() {
+            console.log('下载响应状态:', xhr.status, xhr.statusText);
+            
             if (xhr.status === 200) {
                 resolve(xhr.responseText);
+            } else if (xhr.status === 401) {
+                reject(new Error('认证失败，请检查用户名和密码'));
+            } else if (xhr.status === 403) {
+                reject(new Error('权限不足，无法下载文件'));
+            } else if (xhr.status === 404) {
+                reject(new Error('文件不存在'));
             } else {
-                reject(new Error('WebDAV 下载失败: ' + xhr.status));
+                reject(new Error('WebDAV 下载失败: ' + xhr.status + ' ' + xhr.statusText));
             }
         };
         
         xhr.onerror = function() {
-            reject(new Error('WebDAV 连接错误'));
+            console.error('下载连接错误');
+            reject(new Error('无法连接到服务器，请检查网络连接'));
         };
         
+        xhr.ontimeout = function() {
+            console.error('下载超时');
+            reject(new Error('下载超时，请检查网络连接'));
+        };
+        
+        xhr.timeout = 30000; // 30秒超时
         xhr.send();
     });
 }
@@ -1335,21 +1392,38 @@ function webdavDeleteFile(url, username, password, fileName) {
         const xhr = new XMLHttpRequest();
         const fileUrl = url + fileName;
         
+        console.log('删除文件:', fileUrl);
+        
         xhr.open('DELETE', fileUrl, true);
         xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
         
         xhr.onload = function() {
+            console.log('删除响应状态:', xhr.status, xhr.statusText);
+            
             if (xhr.status === 204) {
                 resolve();
+            } else if (xhr.status === 401) {
+                reject(new Error('认证失败，请检查用户名和密码'));
+            } else if (xhr.status === 403) {
+                reject(new Error('权限不足，无法删除文件'));
+            } else if (xhr.status === 404) {
+                reject(new Error('文件不存在'));
             } else {
-                reject(new Error('WebDAV 删除失败: ' + xhr.status));
+                reject(new Error('WebDAV 删除失败: ' + xhr.status + ' ' + xhr.statusText));
             }
         };
         
         xhr.onerror = function() {
-            reject(new Error('WebDAV 连接错误'));
+            console.error('删除连接错误');
+            reject(new Error('无法连接到服务器，请检查网络连接'));
         };
         
+        xhr.ontimeout = function() {
+            console.error('删除超时');
+            reject(new Error('删除超时，请检查网络连接'));
+        };
+        
+        xhr.timeout = 10000; // 10秒超时
         xhr.send();
     });
 }
