@@ -71,6 +71,8 @@ const elements = {
     webdavPassword: document.getElementById('webdav-password'),
     autoBackup: document.getElementById('auto-backup'),
     showFiles: document.getElementById('show-files'),
+    localSave: document.getElementById('local-save'),
+    cloudSave: document.getElementById('cloud-save'),
     saveWebdav: document.getElementById('save-webdav'),
     testConnection: document.getElementById('test-connection'),
     manualBackup: document.getElementById('manual-backup'),
@@ -630,8 +632,24 @@ function updateStats() {
 // 自动保存
 function startAutoSave() {
     setInterval(() => {
-        saveToLocalStorage();
-        elements.saveStatus.textContent = '已自动保存';
+        const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+        
+        // 本地保存
+        if (config.localSave) {
+            saveToLocalStorage();
+            elements.saveStatus.textContent = '已本地保存';
+        }
+        
+        // 云端保存
+        if (config.cloudSave && config.autoBackup && config.url && config.username && config.password) {
+            // 验证 URL 格式
+            if (config.url.startsWith('http://') || config.url.startsWith('https://')) {
+                autoBackup();
+            } else {
+                console.warn('WebDAV URL 格式不正确，跳过自动备份');
+            }
+        }
+        
         setTimeout(() => {
             elements.saveStatus.textContent = '自动保存中...';
         }, 1000);
@@ -1070,11 +1088,13 @@ function hideCloudModal() {
 // 加载 WebDAV 配置
 function loadWebdavConfig() {
     const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
-    elements.webdavUrl.value = config.url || 'https://dav.jianguoyun.com/dav/cloudpad/';
-    elements.webdavUsername.value = config.username || 'youreln@qq.com';
+    elements.webdavUrl.value = config.url || '';
+    elements.webdavUsername.value = config.username || '';
     elements.webdavPassword.value = config.password || '';
     elements.autoBackup.checked = config.autoBackup || false;
     elements.showFiles.checked = config.showFiles || false;
+    elements.localSave.checked = config.localSave || true;
+    elements.cloudSave.checked = config.cloudSave || false;
     
     // 如果显示文件，加载文件列表
     if (config.showFiles) {
@@ -1090,7 +1110,9 @@ function saveWebdavConfig() {
         username: elements.webdavUsername.value.trim(),
         password: elements.webdavPassword.value,
         autoBackup: elements.autoBackup.checked,
-        showFiles: elements.showFiles.checked
+        showFiles: elements.showFiles.checked,
+        localSave: elements.localSave.checked,
+        cloudSave: elements.cloudSave.checked
     };
     
     localStorage.setItem('webdavConfig', JSON.stringify(config));
@@ -1110,20 +1132,37 @@ function saveWebdavConfig() {
 
 // 测试 WebDAV 连接
 function testWebdavConnection() {
-    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    const url = elements.webdavUrl.value.trim();
+    const username = elements.webdavUsername.value.trim();
+    const password = elements.webdavPassword.value;
     
-    if (!config.url || !config.username || !config.password) {
-        showToast('请先填写配置信息');
+    if (!url || !username || !password) {
+        showToast('请先填写完整的配置信息');
         return;
     }
     
+    // 验证 URL 格式
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        showToast('服务器地址必须以 http:// 或 https:// 开头');
+        return;
+    }
+    
+    // 确保 URL 以 / 结尾
+    const normalizedUrl = url.endsWith('/') ? url : url + '/';
+    
     // 测试连接
-    webdavListFiles(config.url, config.username, config.password)
+    showToast('正在测试连接...');
+    
+    webdavListFiles(normalizedUrl, username, password)
         .then(() => {
-            showToast('连接成功');
+            showToast('连接成功！');
+            // 自动保存修正后的 URL
+            const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+            config.url = normalizedUrl;
+            localStorage.setItem('webdavConfig', JSON.stringify(config));
         })
         .catch((error) => {
-            showToast('连接失败，请检查配置');
+            showToast('连接失败: ' + error.message);
             console.error('WebDAV 连接失败:', error);
         });
 }
@@ -1131,25 +1170,39 @@ function testWebdavConnection() {
 // 手动备份
 function manualBackup() {
     const content = elements.editor.innerHTML;
-    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    const url = elements.webdavUrl.value.trim();
+    const username = elements.webdavUsername.value.trim();
+    const password = elements.webdavPassword.value;
     
-    if (!config.url || !config.username || !config.password) {
-        showToast('请先填写配置信息');
+    if (!url || !username || !password) {
+        showToast('请先填写完整的配置信息');
         return;
     }
     
+    // 验证 URL 格式
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        showToast('服务器地址必须以 http:// 或 https:// 开头');
+        return;
+    }
+    
+    // 确保 URL 以 / 结尾
+    const normalizedUrl = url.endsWith('/') ? url : url + '/';
+    
     const fileName = 'cloudpad_backup_' + new Date().toISOString().slice(0, 10) + '.html';
     
-    webdavUploadFile(config.url, config.username, config.password, fileName, content)
+    showToast('正在备份...');
+    
+    webdavUploadFile(normalizedUrl, username, password, fileName, content)
         .then(() => {
-            showToast('备份成功');
+            showToast('备份成功！');
             // 刷新文件列表
+            const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
             if (config.showFiles) {
                 loadFilesList();
             }
         })
         .catch((error) => {
-            showToast('备份失败，请检查配置');
+            showToast('备份失败: ' + error.message);
             console.error('WebDAV 上传失败:', error);
         });
 }
@@ -1304,7 +1357,9 @@ function webdavListFiles(url, username, password) {
 function webdavUploadFile(url, username, password, fileName, content) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const fileUrl = url + fileName;
+        // 确保 URL 以 / 结尾
+        const normalizedUrl = url.endsWith('/') ? url : url + '/';
+        const fileUrl = normalizedUrl + fileName;
         
         console.log('上传文件:', fileUrl);
         
@@ -1348,7 +1403,9 @@ function webdavUploadFile(url, username, password, fileName, content) {
 function webdavDownloadFile(url, username, password, fileName) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const fileUrl = url + fileName;
+        // 确保 URL 以 / 结尾
+        const normalizedUrl = url.endsWith('/') ? url : url + '/';
+        const fileUrl = normalizedUrl + fileName;
         
         console.log('下载文件:', fileUrl);
         
@@ -1390,7 +1447,9 @@ function webdavDownloadFile(url, username, password, fileName) {
 function webdavDeleteFile(url, username, password, fileName) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        const fileUrl = url + fileName;
+        // 确保 URL 以 / 结尾
+        const normalizedUrl = url.endsWith('/') ? url : url + '/';
+        const fileUrl = normalizedUrl + fileName;
         
         console.log('删除文件:', fileUrl);
         
@@ -1458,16 +1517,33 @@ function saveUserConfig() {
 function autoBackup() {
     const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
     
-    if (config.autoBackup && config.url && config.username && config.password) {
+    if (config.cloudSave && config.autoBackup && config.url && config.username && config.password) {
+        // 验证 URL 格式
+        if (!config.url.startsWith('http://') && !config.url.startsWith('https://')) {
+            console.warn('WebDAV URL 格式不正确，跳过自动备份');
+            return;
+        }
+        
+        // 确保 URL 以 / 结尾
+        const normalizedUrl = config.url.endsWith('/') ? config.url : config.url + '/';
+        
         const content = elements.editor.innerHTML;
         const fileName = 'cloudpad_auto_backup_' + new Date().toISOString().slice(0, 10) + '.html';
         
-        webdavUploadFile(config.url, config.username, config.password, fileName, content)
+        webdavUploadFile(normalizedUrl, config.username, config.password, fileName, content)
             .then(() => {
                 console.log('自动备份成功');
+                elements.saveStatus.textContent = '已云端备份';
+                setTimeout(() => {
+                    elements.saveStatus.textContent = '自动保存中...';
+                }, 1000);
             })
             .catch((error) => {
                 console.error('自动备份失败:', error);
+                elements.saveStatus.textContent = '云端备份失败';
+                setTimeout(() => {
+                    elements.saveStatus.textContent = '自动保存中...';
+                }, 2000);
             });
     }
 }
