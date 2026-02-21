@@ -607,6 +607,109 @@ body {
     max-width: 200px;
 }
 
+/* 表单操作区域 */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.form-actions .modal-btn {
+    flex: 1;
+}
+
+/* 云备份操作区域 */
+.cloud-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.cloud-actions .modal-btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* 已备份文件列表 */
+.backup-files {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.backup-files h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.files-list {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.files-list li {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background-color: var(--toolbar-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.files-list li:hover {
+    background-color: var(--btn-hover-bg);
+}
+
+.files-list .file-name {
+    font-size: 14px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.files-list .file-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.files-list .file-action-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.files-list .file-action-btn:hover {
+    background-color: var(--btn-hover-bg);
+    color: var(--primary-color);
+}
+
+/* 次要按钮样式 */
+.modal-btn.secondary {
+    background-color: var(--toolbar-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.modal-btn.secondary:hover {
+    background-color: var(--btn-hover-bg);
+    border-color: var(--primary-color);
+}
+
 /* 滚动条美化 */
 ::-webkit-scrollbar {
     width: 8px;

@@ -19,9 +19,12 @@
                 <button id="theme-toggle" class="navbar-btn" title="切换主题">
                     <i class="fas fa-moon"></i>
                 </button>
-                <a href="build-interface.html" class="navbar-btn" title="构建安卓APP">
-                    <i class="fas fa-mobile-alt"></i>
-                </a>
+                <button id="cloud-backup" class="navbar-btn" title="云备份">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </button>
+                <button id="user-btn" class="navbar-btn" title="用户">
+                    <i class="fas fa-user"></i>
+                </button>
                 <a href="https://github.com/Youreln/Cloudpad" target="_blank" class="navbar-btn" title="GitHub 项目">
                     <i class="fab fa-github"></i>
                 </a>
@@ -323,6 +326,96 @@
                         <button id="generate-image" class="modal-btn">生成图片</button>
                         <button id="download-image" class="modal-btn">下载图片</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户弹窗 -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="user-modal-title">用户登录</h3>
+                <button class="modal-close user-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">用户名:</label>
+                        <input type="text" id="login-username" class="form-input" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">密码:</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="请输入密码">
+                    </div>
+                    <div class="form-actions">
+                        <button id="login-btn" class="modal-btn">登录</button>
+                        <button id="switch-to-register" class="modal-btn secondary">注册</button>
+                    </div>
+                </div>
+                
+                <div id="register-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="register-username">用户名:</label>
+                        <input type="text" id="register-username" class="form-input" placeholder="请输入用户名">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">密码:</label>
+                        <input type="password" id="register-password" class="form-input" placeholder="请输入密码">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">确认密码:</label>
+                        <input type="password" id="register-confirm-password" class="form-input" placeholder="请确认密码">
+                    </div>
+                    <div class="form-actions">
+                        <button id="register-btn" class="modal-btn">注册</button>
+                        <button id="switch-to-login" class="modal-btn secondary">登录</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 云备份弹窗 -->
+    <div id="cloud-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>云备份设置</h3>
+                <button class="modal-close cloud-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="webdav-url">服务器地址:</label>
+                    <input type="text" id="webdav-url" class="form-input" placeholder="请输入 WebDAV 服务器地址">
+                </div>
+                <div class="form-group">
+                    <label for="webdav-username">用户名:</label>
+                    <input type="text" id="webdav-username" class="form-input" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="webdav-password">密码:</label>
+                    <input type="password" id="webdav-password" class="form-input" placeholder="请输入密码">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="auto-backup"> 自动云备份
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="show-files"> 显示已备份文件
+                    </label>
+                </div>
+                <div class="cloud-actions">
+                    <button id="save-webdav" class="modal-btn">保存设置</button>
+                    <button id="test-connection" class="modal-btn secondary">测试连接</button>
+                    <button id="manual-backup" class="modal-btn secondary">手动备份</button>
+                </div>
+                
+                <!-- 已备份文件列表 -->
+                <div id="backup-files" class="backup-files" style="display: none;">
+                    <h4>已备份文件</h4>
+                    <ul id="files-list" class="files-list"></ul>
                 </div>
             </div>
         </div>

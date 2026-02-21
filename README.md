@@ -1,183 +1,333 @@
-# Cloudpad 项目
+# 云笺：功能全面的富文本编辑器
 
-包含离线原生安卓应用和在线网页版本，提供完整的文本编辑和处理功能。
+# 云笺 (Cloudpad) ✨
 
-## 📱 安卓应用
-- Kotlin + Jetpack Compose 实现
-- MVVM + Hilt 架构
-- Room 本地数据库
-- 完全离线功能
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/5f290d4a1c3545eb9125c00b311278ca~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=YVmpyOmiFMCEja006mULn%2FDyxcw%3D&resource_key=0119ce16-7c76-47bc-ae79-76dd2066dff4&resource_key=0119ce16-7c76-47bc-ae79-76dd2066dff4)
 
-## 🌐 网页版本
-- 纯前端实现（HTML5 + CSS3 + JavaScript）
-- 富文本编辑功能
-- 文本清洗工具
-- 响应式设计，支持多设备
-- 可直接部署到 GitHub Pages
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/a9258a92ae214ca09801f9a99f6088fa~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=BNonQNcqVCZtOjRFajLIM9SBOS4%3D&resource_key=aa62e92b-9f3e-4e39-a19f-0fa7b625ef43&resource_key=aa62e92b-9f3e-4e39-a19f-0fa7b625ef43)
 
-## 🚀 快速开始
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/aa7e9c6cb07d4f629764f26b7e6495c3~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=g0wAyNvri1s2QUsk6EXRdkpBEk8%3D&resource_key=eded0dcf-9b66-4baa-a640-17b35c33f959&resource_key=eded0dcf-9b66-4baa-a640-17b35c33f959)
 
-### 🌐 网页版本使用
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/f360120d49d841bfb169d1681827e7c3~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=OtX7TxraUZWdW%2FEGEJJYGUqiu9k%3D&resource_key=45ee22af-79eb-4b08-84d8-30e80dc24f1b&resource_key=45ee22af-79eb-4b08-84d8-30e80dc24f1b)
 
-1. **直接访问**
-   - 在浏览器中打开根目录的 `index.html` 文件即可使用
-   - 无需安装任何依赖，完全本地运行
+轻量美观的开源富文本编辑与文本处理工具
 
-2. **本地服务器运行**（推荐，避免跨域问题）
-   ```bash
-   # 使用 Python 启动
-   python -m http.server 8000
-   
-   # 或使用 Node.js
-   npx http-server -p 8000
-   
-   # 或使用 PHP
-   php -S localhost:8000
-   ```
-   然后在浏览器中访问 `http://localhost:8000`
+📌 在线体验：[https://youreln.github.io/Cloudpad](https://youreln.github.io/Cloudpad)
 
-3. **部署到 GitHub Pages**
-   - 推送到 GitHub 仓库
-   - 在仓库设置中启用 GitHub Pages
-   - 选择 `main` 分支作为源
-   - 访问地址：`https://你的GitHub用户名.github.io/仓库名`
+📁 项目地址：[https://github.com/Youreln/Cloudpad](https://github.com/Youreln/Cloudpad)
 
-### 📱 安卓应用构建
+## 📋 项目简介
 
-##### 方法一：使用 Gitpod 云构建（推荐）
+云笺是一款面向普通用户与开发者的纯前端在线工具箱，集富文本编辑、文本清洗、格式转换、一键导出于一体。无需登录、无需后端、本地运行，界面简洁优雅，功能实用全面，支持暗黑模式与响应式布局，可在手机、电脑、平板上流畅使用。
 
-1. **打开 Gitpod 工作空间**
-   - 点击以下链接打开项目：
-   - [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/yourusername/cloudpad)
+适合日常写作、文案排版、文本清洗、内容整理、快速编辑等场景，项目完全开源，可自由使用、修改、分发。
 
-2. **等待环境初始化**
-   - Gitpod 会自动安装所有依赖
-   - 包括 JDK 17、Android SDK、Gradle 等
+## ✨ 功能特点
 
-3. **使用可视化构建界面**
-   - 在 Gitpod 文件浏览器中找到 `build-interface.html`
-   - 右键点击文件，选择 "Open with Live Server"
-   - 或直接在浏览器中打开该文件
+### 🎨 富文本编辑
 
-4. **一键构建 APK**
-   - 在打开的构建界面中，点击 "一键构建APK" 按钮
-   - 按照界面提示执行构建命令
-   - 等待构建完成（约5-10分钟）
+- **基础格式**：加粗、斜体、下划线、删除线
 
-5. **下载 APK 文件**
-   - 构建完成后，在 Gitpod 终端中会看到 APK 文件路径
-   - 执行提示的命令创建下载副本
-   - 在文件浏览器中找到 `cloudpad.apk` 文件
-   - 右键点击文件，选择 "Download" 下载到本地
+- **标题层级**：H1、H2、H3 标题快速切换
 
-### 方法二：本地构建
+- **列表功能**：有序列表、无序列表，适配各类排版
 
-1. **安装依赖**
-   - JDK 17
-   - Android Studio
-   - Android SDK (API level 34)
+- **对齐方式**：左对齐、居中对齐、右对齐
 
-2. **克隆项目**
-   ```bash
-   git clone https://github.com/yourusername/cloudpad.git
-   cd cloudpad
-   ```
+- **颜色设置**：文字颜色、背景颜色自定义选择
 
-3. **构建 APK**
-   ```bash
-   # 使用 Python 脚本
-   python3 build-apk.py
-   
-   # 或使用 Bash 脚本
-   chmod +x build-apk.sh
-   ./build-apk.sh
-   ```
+- **格式清除**：一键清除所有文本格式，快速还原
 
-4. **获取 APK**
-   - 构建完成后，APK 文件会生成在 `app/build/outputs/apk/debug/` 目录
+### 🧹 文本清洗
 
-## 📱 应用功能
+- **去空行**：一键合并连续空行，精简文本结构
 
-### 核心功能
-- ✅ 离线优先设计，无网络依赖
-- ✅ 富文本编辑（粗体、斜体、下划线等）
-- ✅ 文本清洗工具（去除空行、多余空格等）
-- ✅ 多文档管理
-- ✅ 自动保存功能
-- ✅ 深色/浅色主题支持
+- **去空格**：去除首尾空格及文本中间多余空格
 
-### 技术特点
-- **架构**: MVVM + Hilt 依赖注入
-- **存储**: Room 本地数据库
-- **UI**: Jetpack Compose (Material 3)
-- **语言**: Kotlin
-- **构建**: Gradle Kotlin DSL
+- **全角半角**：一键互换全角/半角字符，适配不同场景
 
-## 🔧 构建工具
+- **标点互换**：中英文标点符号相互批量转换
 
-### 可视化构建界面
-- **文件**: `build-interface.html`
-- **功能**: 提供友好的网页界面，引导用户完成构建过程
-- **特点**: 实时状态更新、进度显示、详细的步骤说明
+- **大小写转换**：支持全大写、全小写、首字母大写
 
-### 构建脚本
-- **Python 脚本**: `build-apk.py`
-  - 完整的构建流程
-  - 环境检查
-  - 实时构建日志
-  - 自动创建下载副本
+- **繁简转换**：简体中文与繁体中文双向快速转换
 
-- **Bash 脚本**: `build-apk.sh`
-  - 简化的构建命令
-  - 快速执行构建
+- **查找替换**：精准查找文本内容，支持全局替换功能
 
-## 📁 项目结构
+### 💾 导出与操作
 
-```
-cloudpad/
-├── app/                 # 安卓应用代码
-│   ├── src/main/java/com/youreln/cloudpad/  # 主要代码
-│   └── build.gradle.kts                     # 应用级构建配置
-├── web/                 # 网页相关文件
-├── build-interface.html # 可视化构建界面
-├── build-apk.py         # Python 构建脚本
-├── build-apk.sh         # Bash 构建脚本
-├── .gitpod.yml          # Gitpod 配置
-├── .gitpod.dockerfile   # Gitpod Docker 配置
-└── README.md            # 项目说明
-```
+- **复制富文本**：保留文本原有格式，一键复制到剪贴板
 
-## 🎨 界面预览
+- **复制纯文本**：去除所有格式，仅复制文本原始内容
 
-### 编辑器界面
-- 简洁现代的 Material 3 设计
-- 响应式布局，支持不同屏幕尺寸
-- 深色/浅色主题自动切换
+- **导出 TXT**：一键将编辑内容导出为 .txt 文本文件
 
-### 构建界面
-- 直观的状态显示
-- 详细的构建步骤
-- 实时的进度更新
-- 清晰的下载说明
+- **清空内容**：快速清空编辑区，带二次确认防止误操作
 
-## 🔒 安全说明
+### 🎯 体验增强
 
-- 完全离线运行，无需网络连接
-- 所有数据存储在本地设备
-- 无第三方依赖，确保应用安全
+- **自动保存**：基于 localStorage 每 3 秒自动保存，内容不丢失
 
-## 🤝 贡献
+- **主题切换**：暗黑模式与浅色模式无缝切换，保存用户偏好
 
-欢迎提交 Issue 和 Pull Request 来改进这个项目！
+- **响应式设计**：完美适配手机、平板、电脑，无适配断层
+
+- **拖拽调整**：编辑区高度可自由拖拽，适配不同编辑需求
+
+- **操作提示**：底部轻提示实时反馈操作结果，交互更友好
+
+- **实时统计**：字数、字符数、行数实时统计，方便排版把控
+
+- **一键回顶**：快速返回页面顶部，提升操作效率
+
+## 🛠️ 技术栈
+
+- **前端核心**：HTML5 + CSS3 + JavaScript (ES6+)
+
+- **图标资源**：Font Awesome (CDN 引入，无需本地安装)
+
+- **数据存储**：localStorage 本地存储，无后端依赖
+
+- **开发特性**：纯原生开发，无任何前端框架，轻量无冗余
+
+- **部署方式**：静态文件部署，支持所有静态托管服务
+
+## 📱 响应式设计
+
+|设备类型|屏幕尺寸|布局优化策略|
+|---|---|---|
+|手机端|< 768px|工具栏折叠为下拉菜单，编辑区占满屏幕宽度|
+|平板端|768px - 1024px|工具栏两行排列，编辑区宽度 90% 居中显示|
+|电脑端|> 1024px|工具栏完整展开，编辑区居中并限制最大宽度|
+## 📸 功能截图
+
+### 浅色模式
+
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/5ddd6556074f430281c1a24c663f7445~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=Y4CmUv8Pc6VNlX6kCDEXLLO%2FPA0%3D&resource_key=9c6fd170-987d-4198-9933-658c1d6d3a0a&resource_key=9c6fd170-987d-4198-9933-658c1d6d3a0a)
+
+### 暗黑模式
+
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/c251a3533833484e8bea726bb90831ba~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=yEaB2JBMM3k8p4%2F75K3NiPjXr2I%3D&resource_key=2caf4f29-2a83-483e-9212-0f239a7a7162&resource_key=2caf4f29-2a83-483e-9212-0f239a7a7162)
+
+### 文本清洗功能
+
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/4d9f7dece9984c7eae36f5f7ecd6839b~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=sY88WPQGat5A89vtdo8hahFM838%3D&resource_key=fcd3f5ec-2b34-4b25-9880-8ec9931e3a94&resource_key=fcd3f5ec-2b34-4b25-9880-8ec9931e3a94)
+
+### 手机端适配
+
+![Image](https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/online_import/71b9df872e0040f29ec0b637fa46556a~tplv-noop.jpeg?rk3s=49177a0b&x-expires=1771656302&x-signature=mtfBrXfhghKHeBQ8lYca%2FLTz9FQ%3D&resource_key=58eebc62-8246-49ea-86b8-bacb8bd1758b&resource_key=58eebc62-8246-49ea-86b8-bacb8bd1758b)
+
+## 🚀 部署教程
+
+### 方法一：直接本地打开（最简方式）
+
+1. 克隆或下载本项目到本地：
+
+    ```Bash
+    
+    git clone https://github.com/Youreln/Cloudpad.git
+    ```
+
+2. 进入项目根目录，直接在浏览器中打开 `index.html` 文件即可使用所有功能。
+
+### 方法二：本地服务器运行（推荐，避免跨域/存储问题）
+
+1. 克隆项目并进入目录：
+
+    ```Bash
+    
+    git clone https://github.com/Youreln/Cloudpad.git
+    cd Cloudpad
+    ```
+
+2. 启动本地服务器（任选其一）：
+
+    - Python 3.x 启动：
+
+        ```Bash
+        
+        python -m http.server 8000
+        ```
+
+    - Node.js 启动（需先安装 http-server：`npm i -g http-server`）：
+
+        ```Bash
+        
+        npx http-server -p 8000
+        ```
+
+    - PHP 启动：
+
+        ```Bash
+        
+        php -S localhost:8000
+        ```
+
+3. 浏览器中打开 `http://localhost:8000`，即可正常使用。
+
+### 方法三：部署到 GitHub Pages（免费线上部署）
+
+1. Fork 本仓库到你的 GitHub 账号；
+
+2. 进入 Fork 后的仓库，点击顶部「Settings」；
+
+3. 下拉找到「Pages」选项，在「Source」中选择「main」分支，点击「Save」；
+
+4. 等待 1-5 分钟生效，访问地址为 `https://你的GitHub用户名.github.io/Cloudpad`。
+
+### 方法四：部署到其他静态托管服务
+
+无需额外配置，导入 GitHub 仓库即可一键部署：
+
+- Vercel：[https://vercel.com/](https://vercel.com/)
+
+- Netlify：[https://www.netlify.com/](https://www.netlify.com/)
+
+- Cloudflare Pages：[https://pages.cloudflare.com/](https://pages.cloudflare.com/)
+
+## 📖 使用指南
+
+### 基础编辑
+
+1. 在编辑区直接输入或粘贴文本，支持粘贴带格式的外部内容；
+
+2. 使用顶部工具栏的功能按钮，对文本进行格式设置、列表创建等操作；
+
+3. 拖拽编辑区底部边框，可自由调整编辑区高度，适配编辑需求。
+
+### 文本清洗
+
+1. 将需要处理的文本粘贴到编辑区；
+
+2. 点击工具栏中「文本清洗」分类下的对应功能按钮；
+
+3. 文本处理完成后，可直接复制或导出结果。
+
+### 导出与保存
+
+1. 复制：根据需求选择「复制富文本」或「复制纯文本」，一键复制到剪贴板；
+
+2. 导出：点击「导出 TXT」按钮，浏览器将自动下载文本文件；
+
+3. 自动保存：编辑内容将实时自动保存，刷新页面、重新打开浏览器均可恢复。
+
+### 主题切换
+
+1. 点击顶部导航栏的主题切换按钮；
+
+2. 可在浅色模式与暗黑模式间无缝切换；
+
+3. 主题偏好将自动保存到本地，下次打开自动生效。
+
+## 🤝 贡献指南
+
+### 贡献流程
+
+1. **Fork 本仓库**：点击仓库右上角「Fork」，将仓库复制到个人 GitHub 账号；
+
+2. **创建分支**：克隆 Fork 后的仓库到本地，创建功能/修复分支，命名规范如下：
+
+    ```Bash
+    
+    # 新增功能
+    git checkout -b feature/AmazingFeature
+    # 修复 BUG
+    git checkout -b fix/BugDescription
+    ```
+
+3. **提交修改**：完成开发后，提交修改并遵循清晰的提交信息规范：
+
+    ```Bash
+    
+    git add .
+    git commit -m "feat: 新增XX功能"  # 新增功能
+    # 或
+    git commit -m "fix: 修复XX问题"  # 修复BUG
+    ```
+
+4. **推送到分支**：将本地修改推送到个人 GitHub 仓库的对应分支：
+
+    ```Bash
+    
+    git push origin feature/AmazingFeature
+    ```
+
+5. **打开 Pull Request**：在个人仓库页面点击「Pull request」，提交到本仓库的 main 分支，等待审核合并。
+
+### 开发规范
+
+- **代码风格**：保持代码风格统一，使用 4 空格缩进，避免制表符；
+
+- **命名规范**：变量、函数使用语义化驼峰命名，避免无意义命名；
+
+- **注释规范**：核心逻辑、复杂函数添加必要注释，说明功能、参数及返回值；
+
+- **兼容性**：确保开发的功能兼容主流浏览器（Chrome/Firefox/Safari/Edge）；
+
+- **测试要求**：修改完成后，在多设备（手机/平板/电脑）测试功能完整性和响应式适配。
+
+### 开发文件说明
+
+|文件名称|主要作用|
+|---|---|
+|index.html|页面结构、工具栏、DOM 元素定义|
+|style.css|全局样式、响应式布局、暗黑模式|
+|script.js|核心功能逻辑、交互、数据处理|
+## ❓ 常见问题
+
+### Q1：编辑的内容会丢失吗？
+
+不会。项目基于 localStorage 实现每 3 秒自动保存，页面刷新、重新打开浏览器均可恢复内容；仅清除浏览器缓存时，保存的内容会被删除。
+
+### Q2：文本内容会上传到服务器吗？
+
+不会。所有功能均在前端本地运行，文本内容仅存储在你的浏览器本地，不会上传到任何服务器，保障隐私安全。
+
+### Q3：部署 GitHub Pages 后访问不到？
+
+1. 需等待 1-5 分钟让页面生效；
+
+2. 检查仓库「Settings-Pages」中「Source」是否选择「main」分支；
+
+3. 确认访问地址格式为：`https://你的GitHub用户名.github.io/Cloudpad`。
+
+### Q4：部分浏览器功能无法使用？
+
+建议使用 Chrome、Edge、Safari、Firefox 等现代浏览器的最新版本；老旧浏览器（如 IE）不支持部分 HTML5/CSS3/ES6+ 特性，会导致功能异常。
+
+### Q5：如何修改工具的配色和 LOGO？
+
+1. 配色修改：编辑 `style.css` 文件，找到颜色相关配置项，自定义修改即可；
+
+2. LOGO 修改：编辑 `index.html` 文件，替换顶部导航栏的 LOGO 相关代码/图片即可。
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件
+本项目采用 **MIT 许可证**，可自由使用、修改、分发本项目，无需授权，但请保留原作者版权信息。
 
-## 📞 支持
+详见项目根目录 [LICENSE](LICENSE) 文件。
 
-如果您遇到任何问题，请在 GitHub 上提交 Issue，我们会尽快回复您。
+## 📞 联系方式
+
+- **项目仓库**：[https://github.com/Youreln/Cloudpad](https://github.com/Youreln/Cloudpad)
+
+- **问题反馈**：[GitHub Issues](https://github.com/Youreln/Cloudpad/issues)（建议附截图/复现步骤）
+
+- **开发者**：[Youreln](https://github.com/Youreln)
+
+## 🙏 致谢
+
+- **Font Awesome**：提供免费开源的精美图标库，提升工具交互体验；
+
+- **开源社区**：提供宝贵的技术文档、解决方案和开发灵感；
+
+- **所有使用者和贡献者**：感谢每一位提交 PR、反馈问题的开发者和用户。
 
 ---
 
-**享受使用 Cloudpad！** 🎉
+**云笺 - 让文本编辑更简单** ✨
+
+如果您喜欢本项目，欢迎 Star ⭐ 支持！
+
+© 2026 Youreln | Cloudpad 云笺
+> （注：文档部分内容可能由 AI 生成）

@@ -4,6 +4,8 @@ const elements = {
     themeToggle: document.getElementById('theme-toggle'),
     aboutBtn: document.getElementById('about-btn'),
     shareBtn: document.getElementById('share-btn'),
+    cloudBackup: document.getElementById('cloud-backup'),
+    userBtn: document.getElementById('user-btn'),
     mobileToolbar: document.getElementById('mobile-toolbar'),
     removeEmptyLines: document.getElementById('remove-empty-lines'),
     removeSpaces: document.getElementById('remove-spaces'),
@@ -45,7 +47,35 @@ const elements = {
     styleBtns: document.querySelectorAll('.style-btn'),
     generateImage: document.getElementById('generate-image'),
     downloadImage: document.getElementById('download-image'),
-    shareCanvas: document.getElementById('share-canvas')
+    shareCanvas: document.getElementById('share-canvas'),
+    // 用户相关元素
+    userModal: document.getElementById('user-modal'),
+    userModalClose: document.querySelector('.user-modal-close'),
+    userModalTitle: document.getElementById('user-modal-title'),
+    loginForm: document.getElementById('login-form'),
+    registerForm: document.getElementById('register-form'),
+    loginUsername: document.getElementById('login-username'),
+    loginPassword: document.getElementById('login-password'),
+    loginBtn: document.getElementById('login-btn'),
+    switchToRegister: document.getElementById('switch-to-register'),
+    registerUsername: document.getElementById('register-username'),
+    registerPassword: document.getElementById('register-password'),
+    registerConfirmPassword: document.getElementById('register-confirm-password'),
+    registerBtn: document.getElementById('register-btn'),
+    switchToLogin: document.getElementById('switch-to-login'),
+    // 云备份相关元素
+    cloudModal: document.getElementById('cloud-modal'),
+    cloudModalClose: document.querySelector('.cloud-modal-close'),
+    webdavUrl: document.getElementById('webdav-url'),
+    webdavUsername: document.getElementById('webdav-username'),
+    webdavPassword: document.getElementById('webdav-password'),
+    autoBackup: document.getElementById('auto-backup'),
+    showFiles: document.getElementById('show-files'),
+    saveWebdav: document.getElementById('save-webdav'),
+    testConnection: document.getElementById('test-connection'),
+    manualBackup: document.getElementById('manual-backup'),
+    backupFiles: document.getElementById('backup-files'),
+    filesList: document.getElementById('files-list')
 };
 
 // 全局变量
@@ -150,6 +180,36 @@ function bindEvents() {
     elements.shareModal.addEventListener('click', (e) => {
         if (e.target === elements.shareModal) {
             hideShareModal();
+        }
+    });
+
+    // 用户按钮和弹窗
+    elements.userBtn.addEventListener('click', showUserModal);
+    elements.userModalClose.addEventListener('click', hideUserModal);
+    elements.switchToRegister.addEventListener('click', switchToRegisterForm);
+    elements.switchToLogin.addEventListener('click', switchToLoginForm);
+    elements.loginBtn.addEventListener('click', login);
+    elements.registerBtn.addEventListener('click', register);
+    
+    // 点击弹窗外部关闭
+    elements.userModal.addEventListener('click', (e) => {
+        if (e.target === elements.userModal) {
+            hideUserModal();
+        }
+    });
+
+    // 云备份按钮和弹窗
+    elements.cloudBackup.addEventListener('click', showCloudModal);
+    elements.cloudModalClose.addEventListener('click', hideCloudModal);
+    elements.saveWebdav.addEventListener('click', saveWebdavConfig);
+    elements.testConnection.addEventListener('click', testWebdavConnection);
+    elements.manualBackup.addEventListener('click', manualBackup);
+    elements.showFiles.addEventListener('change', toggleFilesList);
+    
+    // 点击弹窗外部关闭
+    elements.cloudModal.addEventListener('click', (e) => {
+        if (e.target === elements.cloudModal) {
+            hideCloudModal();
         }
     });
 
@@ -908,6 +968,436 @@ function downloadShareImage() {
     }
 }
 
+// 用户相关函数
+
+// 显示用户弹窗
+function showUserModal() {
+    elements.userModal.classList.add('show');
+}
+
+// 隐藏用户弹窗
+function hideUserModal() {
+    elements.userModal.classList.remove('show');
+}
+
+// 切换到注册表单
+function switchToRegisterForm() {
+    elements.loginForm.style.display = 'none';
+    elements.registerForm.style.display = 'block';
+    elements.userModalTitle.textContent = '用户注册';
+}
+
+// 切换到登录表单
+function switchToLoginForm() {
+    elements.registerForm.style.display = 'none';
+    elements.loginForm.style.display = 'block';
+    elements.userModalTitle.textContent = '用户登录';
+}
+
+// 登录
+function login() {
+    const username = elements.loginUsername.value.trim();
+    const password = elements.loginPassword.value;
+    
+    if (!username || !password) {
+        showToast('请输入用户名和密码');
+        return;
+    }
+    
+    // 从本地存储获取用户数据
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    
+    if (users[username] && users[username] === password) {
+        // 登录成功
+        localStorage.setItem('currentUser', username);
+        showToast('登录成功');
+        hideUserModal();
+        // 加载用户配置
+        loadUserConfig();
+    } else {
+        showToast('用户名或密码错误');
+    }
+}
+
+// 注册
+function register() {
+    const username = elements.registerUsername.value.trim();
+    const password = elements.registerPassword.value;
+    const confirmPassword = elements.registerConfirmPassword.value;
+    
+    if (!username || !password || !confirmPassword) {
+        showToast('请填写所有字段');
+        return;
+    }
+    
+    if (password !== confirmPassword) {
+        showToast('两次输入的密码不一致');
+        return;
+    }
+    
+    // 从本地存储获取用户数据
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    
+    if (users[username]) {
+        showToast('用户名已存在');
+        return;
+    }
+    
+    // 注册成功
+    users[username] = password;
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('currentUser', username);
+    showToast('注册成功');
+    hideUserModal();
+    // 保存默认配置
+    saveUserConfig();
+}
+
+// 云备份相关函数
+
+// 显示云备份弹窗
+function showCloudModal() {
+    elements.cloudModal.classList.add('show');
+    // 加载保存的 WebDAV 配置
+    loadWebdavConfig();
+}
+
+// 隐藏云备份弹窗
+function hideCloudModal() {
+    elements.cloudModal.classList.remove('show');
+}
+
+// 加载 WebDAV 配置
+function loadWebdavConfig() {
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    elements.webdavUrl.value = config.url || 'https://dav.jianguoyun.com/dav/';
+    elements.webdavUsername.value = config.username || 'youreln@qq.com';
+    elements.webdavPassword.value = config.password || 'a9xcr5te6j5bzwpj';
+    elements.autoBackup.checked = config.autoBackup || false;
+    elements.showFiles.checked = config.showFiles || false;
+    
+    // 如果显示文件，加载文件列表
+    if (config.showFiles) {
+        elements.backupFiles.style.display = 'block';
+        loadFilesList();
+    }
+}
+
+// 保存 WebDAV 配置
+function saveWebdavConfig() {
+    const config = {
+        url: elements.webdavUrl.value.trim(),
+        username: elements.webdavUsername.value.trim(),
+        password: elements.webdavPassword.value,
+        autoBackup: elements.autoBackup.checked,
+        showFiles: elements.showFiles.checked
+    };
+    
+    localStorage.setItem('webdavConfig', JSON.stringify(config));
+    showToast('配置保存成功');
+    
+    // 如果显示文件，加载文件列表
+    if (config.showFiles) {
+        elements.backupFiles.style.display = 'block';
+        loadFilesList();
+    } else {
+        elements.backupFiles.style.display = 'none';
+    }
+    
+    // 保存用户配置
+    saveUserConfig();
+}
+
+// 测试 WebDAV 连接
+function testWebdavConnection() {
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    
+    if (!config.url || !config.username || !config.password) {
+        showToast('请先填写配置信息');
+        return;
+    }
+    
+    // 测试连接
+    webdavListFiles(config.url, config.username, config.password)
+        .then(() => {
+            showToast('连接成功');
+        })
+        .catch((error) => {
+            showToast('连接失败，请检查配置');
+            console.error('WebDAV 连接失败:', error);
+        });
+}
+
+// 手动备份
+function manualBackup() {
+    const content = elements.editor.innerHTML;
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    
+    if (!config.url || !config.username || !config.password) {
+        showToast('请先填写配置信息');
+        return;
+    }
+    
+    const fileName = 'cloudpad_backup_' + new Date().toISOString().slice(0, 10) + '.html';
+    
+    webdavUploadFile(config.url, config.username, config.password, fileName, content)
+        .then(() => {
+            showToast('备份成功');
+            // 刷新文件列表
+            if (config.showFiles) {
+                loadFilesList();
+            }
+        })
+        .catch((error) => {
+            showToast('备份失败，请检查配置');
+            console.error('WebDAV 上传失败:', error);
+        });
+}
+
+// 切换文件列表显示
+function toggleFilesList() {
+    if (elements.showFiles.checked) {
+        elements.backupFiles.style.display = 'block';
+        loadFilesList();
+    } else {
+        elements.backupFiles.style.display = 'none';
+    }
+}
+
+// 加载文件列表
+function loadFilesList() {
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    
+    if (!config.url || !config.username || !config.password) {
+        return;
+    }
+    
+    webdavListFiles(config.url, config.username, config.password)
+        .then((files) => {
+            renderFilesList(files);
+        })
+        .catch((error) => {
+            console.error('加载文件列表失败:', error);
+        });
+}
+
+// 渲染文件列表
+function renderFilesList(files) {
+    elements.filesList.innerHTML = '';
+    
+    files.forEach((file) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="file-name">${file.name}</span>
+            <div class="file-actions">
+                <button class="file-action-btn" onclick="downloadFile('${file.name}')" title="下载">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="file-action-btn" onclick="deleteFile('${file.name}')" title="删除">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        elements.filesList.appendChild(li);
+    });
+}
+
+// 下载文件
+function downloadFile(fileName) {
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    
+    webdavDownloadFile(config.url, config.username, config.password, fileName)
+        .then((content) => {
+            elements.editor.innerHTML = content;
+            showToast('文件加载成功');
+            updateStats();
+        })
+        .catch((error) => {
+            showToast('文件加载失败');
+            console.error('WebDAV 下载失败:', error);
+        });
+}
+
+// 删除文件
+function deleteFile(fileName) {
+    if (confirm('确定要删除这个文件吗？')) {
+        const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+        
+        webdavDeleteFile(config.url, config.username, config.password, fileName)
+            .then(() => {
+                showToast('文件删除成功');
+                loadFilesList();
+            })
+            .catch((error) => {
+                showToast('文件删除失败');
+                console.error('WebDAV 删除失败:', error);
+            });
+    }
+}
+
+// WebDAV 操作函数
+
+// 列出文件
+function webdavListFiles(url, username, password) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PROPFIND', url, true);
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
+        xhr.setRequestHeader('Depth', '1');
+        
+        xhr.onload = function() {
+            if (xhr.status === 207) {
+                // 解析 XML 响应
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(xhr.responseText, 'application/xml');
+                const responses = doc.getElementsByTagName('response');
+                const files = [];
+                
+                for (let i = 0; i < responses.length; i++) {
+                    const response = responses[i];
+                    const href = response.getElementsByTagName('href')[0].textContent;
+                    const name = href.split('/').pop();
+                    
+                    // 只显示 HTML 文件
+                    if (name && name.endsWith('.html')) {
+                        files.push({ name });
+                    }
+                }
+                
+                resolve(files);
+            } else {
+                reject(new Error('WebDAV 列表失败: ' + xhr.status));
+            }
+        };
+        
+        xhr.onerror = function() {
+            reject(new Error('WebDAV 连接错误'));
+        };
+        
+        xhr.send();
+    });
+}
+
+// 上传文件
+function webdavUploadFile(url, username, password, fileName, content) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const fileUrl = url + fileName;
+        
+        xhr.open('PUT', fileUrl, true);
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
+        xhr.setRequestHeader('Content-Type', 'text/html; charset=utf-8');
+        
+        xhr.onload = function() {
+            if (xhr.status === 201 || xhr.status === 204) {
+                resolve();
+            } else {
+                reject(new Error('WebDAV 上传失败: ' + xhr.status));
+            }
+        };
+        
+        xhr.onerror = function() {
+            reject(new Error('WebDAV 连接错误'));
+        };
+        
+        xhr.send(content);
+    });
+}
+
+// 下载文件
+function webdavDownloadFile(url, username, password, fileName) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const fileUrl = url + fileName;
+        
+        xhr.open('GET', fileUrl, true);
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
+        
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                resolve(xhr.responseText);
+            } else {
+                reject(new Error('WebDAV 下载失败: ' + xhr.status));
+            }
+        };
+        
+        xhr.onerror = function() {
+            reject(new Error('WebDAV 连接错误'));
+        };
+        
+        xhr.send();
+    });
+}
+
+// 删除文件
+function webdavDeleteFile(url, username, password, fileName) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const fileUrl = url + fileName;
+        
+        xhr.open('DELETE', fileUrl, true);
+        xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
+        
+        xhr.onload = function() {
+            if (xhr.status === 204) {
+                resolve();
+            } else {
+                reject(new Error('WebDAV 删除失败: ' + xhr.status));
+            }
+        };
+        
+        xhr.onerror = function() {
+            reject(new Error('WebDAV 连接错误'));
+        };
+        
+        xhr.send();
+    });
+}
+
+// 用户配置相关函数
+
+// 加载用户配置
+function loadUserConfig() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+        const userConfig = JSON.parse(localStorage.getItem('userConfig_' + currentUser) || '{}');
+        // 加载用户的 WebDAV 配置
+        if (userConfig.webdavConfig) {
+            localStorage.setItem('webdavConfig', JSON.stringify(userConfig.webdavConfig));
+        }
+    }
+}
+
+// 保存用户配置
+function saveUserConfig() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+        const webdavConfig = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+        const userConfig = {
+            webdavConfig
+        };
+        localStorage.setItem('userConfig_' + currentUser, JSON.stringify(userConfig));
+    }
+}
+
+// 自动备份功能
+function autoBackup() {
+    const config = JSON.parse(localStorage.getItem('webdavConfig') || '{}');
+    
+    if (config.autoBackup && config.url && config.username && config.password) {
+        const content = elements.editor.innerHTML;
+        const fileName = 'cloudpad_auto_backup_' + new Date().toISOString().slice(0, 10) + '.html';
+        
+        webdavUploadFile(config.url, config.username, config.password, fileName, content)
+            .then(() => {
+                console.log('自动备份成功');
+            })
+            .catch((error) => {
+                console.error('自动备份失败:', error);
+            });
+    }
+}
+
 // 一键回到顶部
 function backToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -920,6 +1410,31 @@ function toggleBackToTop() {
     } else {
         elements.backToTop.classList.remove('show');
     }
+}
+
+// 初始化自动备份
+function initAutoBackup() {
+    // 每5分钟自动备份一次
+    setInterval(autoBackup, 5 * 60 * 1000);
+    
+    // 编辑内容变化时也触发备份
+    elements.editor.addEventListener('input', () => {
+        // 防抖处理，避免频繁备份
+        clearTimeout(window.backupTimer);
+        window.backupTimer = setTimeout(autoBackup, 30000); // 30秒后备份
+    });
+}
+
+// 初始化应用
+function init() {
+    loadFromLocalStorage();
+    loadTheme();
+    bindEvents();
+    updateStats();
+    startAutoSave();
+    initAutoBackup();
+    // 加载当前用户配置
+    loadUserConfig();
 }
 
 // 初始化应用
