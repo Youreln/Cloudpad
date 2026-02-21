@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云笺 - 极简富文本工具箱</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="navbar">
+        <div class="container">
+            <div class="navbar-left">
+                <i class="fas fa-cloud"></i>
+                <span>极简富文本工具箱</span>
+            </div>
+            <div class="navbar-right">
+                <button id="theme-toggle" class="navbar-btn" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="https://github.com/Youreln/Cloudpad" target="_blank" class="navbar-btn" title="GitHub 项目">
+                    <i class="fab fa-github"></i>
+                </a>
+                <button id="share-btn" class="navbar-btn" title="分享">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <button id="about-btn" class="navbar-btn" title="关于">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 功能工具栏 -->
+    <div class="toolbar">
+        <div class="container">
+            <!-- 工具栏分组 - 富文本编辑 -->
+            <div class="toolbar-group">
+                <button class="toolbar-btn" data-command="bold" title="加粗">
+                    <i class="fas fa-bold"></i>
+                    <span>加粗</span>
+                </button>
+                <button class="toolbar-btn" data-command="italic" title="斜体">
+                    <i class="fas fa-italic"></i>
+                    <span>斜体</span>
+                </button>
+                <button class="toolbar-btn" data-command="underline" title="下划线">
+                    <i class="fas fa-underline"></i>
+                    <span>下划线</span>
+                </button>
+                <button class="toolbar-btn" data-command="strikeThrough" title="删除线">
+                    <i class="fas fa-strikethrough"></i>
+                    <span>删除线</span>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" data-command="formatBlock" data-value="<h1>" title="H1标题">
+                    <i class="fas fa-heading"></i>
+                    <span>H1</span>
+                </button>
+                <button class="toolbar-btn" data-command="formatBlock" data-value="<h2>" title="H2标题">
+                    <i class="fas fa-heading"></i>
+                    <span>H2</span>
+                </button>
+                <button class="toolbar-btn" data-command="formatBlock" data-value="<h3>" title="H3标题">
+                    <i class="fas fa-heading"></i>
+                    <span>H3</span>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" data-command="insertOrderedList" title="有序列表">
+                    <i class="fas fa-list-ol"></i>
+                    <span>有序</span>
+                </button>
+                <button class="toolbar-btn" data-command="insertUnorderedList" title="无序列表">
+                    <i class="fas fa-list-ul"></i>
+                    <span>无序</span>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" data-command="justifyLeft" title="左对齐">
+                    <i class="fas fa-align-left"></i>
+                    <span>左对齐</span>
+                </button>
+                <button class="toolbar-btn" data-command="justifyCenter" title="居中对齐">
+                    <i class="fas fa-align-center"></i>
+                    <span>居中</span>
+                </button>
+                <button class="toolbar-btn" data-command="justifyRight" title="右对齐">
+                    <i class="fas fa-align-right"></i>
+                    <span>右对齐</span>
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn" data-command="foreColor" title="文字颜色">
+                    <i class="fas fa-font"></i>
+                    <span>文字色</span>
+                </button>
+                <button class="toolbar-btn" data-command="hiliteColor" title="背景颜色">
+                    <i class="fas fa-highlighter"></i>
+                    <span>背景色</span>
+                </button>
+                <button class="toolbar-btn" data-command="removeFormat" title="清除格式">
+                    <i class="fas fa-eraser"></i>
+                    <span>清除格式</span>
+                </button>
+            </div>
+
+            <!-- 工具栏分组 - 文本清洗 -->
+            <div class="toolbar-group">
+                <button id="remove-empty-lines" class="toolbar-btn" title="去空行">
+                    <i class="fas fa-compress-alt"></i>
+                    <span>去空行</span>
+                </button>
+                <button id="remove-spaces" class="toolbar-btn" title="去多余空格">
+                    <i class="fas fa-trim"></i>
+                    <span>去空格</span>
+                </button>
+                <button id="fullwidth-halfwidth" class="toolbar-btn" title="全角半角互换">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>全半角</span>
+                </button>
+                <button id="punctuation-swap" class="toolbar-btn" title="中英文标点互换">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>标点互换</span>
+                </button>
+                <button id="case-convert" class="toolbar-btn" title="大小写转换">
+                    <i class="fas fa-text-height"></i>
+                    <span>大小写</span>
+                </button>
+                <button id="traditional-simplified" class="toolbar-btn" title="繁简转换">
+                    <i class="fas fa-language"></i>
+                    <span>繁简</span>
+                </button>
+                <button id="find-replace" class="toolbar-btn" title="查找替换">
+                    <i class="fas fa-search"></i>
+                    <span>查找替换</span>
+                </button>
+            </div>
+
+            <!-- 工具栏分组 - 操作 -->
+            <div class="toolbar-group">
+                <button id="copy-rich-text" class="toolbar-btn" title="复制富文本">
+                    <i class="fas fa-copy"></i>
+                    <span>复制富文本</span>
+                </button>
+                <button id="copy-plain-text" class="toolbar-btn" title="复制纯文本">
+                    <i class="fas fa-file-alt"></i>
+                    <span>复制纯文本</span>
+                </button>
+                <button id="export-txt" class="toolbar-btn" title="导出TXT">
+                    <i class="fas fa-download"></i>
+                    <span>导出TXT</span>
+                </button>
+                <button id="clear-content" class="toolbar-btn" title="清空">
+                    <i class="fas fa-trash"></i>
+                    <span>清空</span>
+                </button>
+            </div>
+
+            <!-- 手机端下拉菜单 -->
+            <div class="toolbar-mobile">
+                <select id="mobile-toolbar">
+                    <option value="">选择操作</option>
+                    <!-- 富文本编辑 -->
+                    <option value="bold">加粗</option>
+                    <option value="italic">斜体</option>
+                    <option value="underline">下划线</option>
+                    <option value="strikeThrough">删除线</option>
+                    <option value="h1">H1标题</option>
+                    <option value="h2">H2标题</option>
+                    <option value="h3">H3标题</option>
+                    <option value="insertOrderedList">有序列表</option>
+                    <option value="insertUnorderedList">无序列表</option>
+                    <option value="justifyLeft">左对齐</option>
+                    <option value="justifyCenter">居中</option>
+                    <option value="justifyRight">右对齐</option>
+                    <option value="removeFormat">清除格式</option>
+                    <!-- 文本清洗 -->
+                    <option value="remove-empty-lines">去空行</option>
+                    <option value="remove-spaces">去多余空格</option>
+                    <option value="fullwidth-halfwidth">全角半角互换</option>
+                    <option value="punctuation-swap">中英文标点互换</option>
+                    <option value="case-convert">大小写转换</option>
+                    <option value="traditional-simplified">繁简转换</option>
+                    <option value="find-replace">查找替换</option>
+                    <!-- 操作 -->
+                    <option value="copy-rich-text">复制富文本</option>
+                    <option value="copy-plain-text">复制纯文本</option>
+                    <option value="export-txt">导出TXT</option>
+                    <option value="clear-content">清空</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主编辑区 -->
+    <main class="main-content">
+        <div class="container">
+            <div class="editor-container">
+                <div id="editor" contenteditable="true"></div>
+                <div class="editor-resizer"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部状态栏 -->
+    <footer class="status-bar">
+        <div class="container">
+            <div class="status-left">
+                <span id="save-status">自动保存中...</span>
+            </div>
+            <div class="status-right">
+                <span id="word-count">字数: 0</span>
+                <span id="char-count">字符: 0</span>
+                <span id="line-count">行数: 0</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 操作提示 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 查找替换弹窗 -->
+    <div id="find-replace-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>查找替换</h3>
+                <button id="close-modal" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="find-text">查找:</label>
+                    <input type="text" id="find-text" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="replace-text">替换:</label>
+                    <input type="text" id="replace-text" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="replace-all"> 全局替换
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="find-next" class="modal-btn">查找下一个</button>
+                <button id="replace-btn" class="modal-btn">替换</button>
+                <button id="replace-all-btn" class="modal-btn">全部替换</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 大小写转换弹窗 -->
+    <div id="case-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>大小写转换</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <button id="to-uppercase" class="modal-btn">转换为大写</button>
+                    <button id="to-lowercase" class="modal-btn">转换为小写</button>
+                    <button id="to-titlecase" class="modal-btn">首字母大写</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 一键回到顶部 -->
+    <button id="back-to-top" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
