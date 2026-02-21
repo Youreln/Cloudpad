@@ -34,7 +34,18 @@ const elements = {
     toLowercase: document.getElementById('to-lowercase'),
     toTitlecase: document.getElementById('to-titlecase'),
     backToTop: document.getElementById('back-to-top'),
-    editorResizer: document.querySelector('.editor-resizer')
+    editorResizer: document.querySelector('.editor-resizer'),
+    // 分享相关元素
+    shareModal: document.getElementById('share-modal'),
+    shareModalClose: document.querySelector('.share-modal-close'),
+    shareLink: document.getElementById('share-link'),
+    shareImage: document.getElementById('share-image'),
+    shareSystem: document.getElementById('share-system'),
+    imageOptions: document.getElementById('image-options'),
+    styleBtns: document.querySelectorAll('.style-btn'),
+    generateImage: document.getElementById('generate-image'),
+    downloadImage: document.getElementById('download-image'),
+    shareCanvas: document.getElementById('share-canvas')
 };
 
 // 全局变量
@@ -115,7 +126,32 @@ function bindEvents() {
     elements.themeToggle.addEventListener('click', toggleTheme);
 
     // 分享按钮
-    elements.shareBtn.addEventListener('click', shareContent);
+    elements.shareBtn.addEventListener('click', showShareModal);
+
+    // 分享弹窗事件
+    elements.shareModalClose.addEventListener('click', hideShareModal);
+    elements.shareLink.addEventListener('click', copyShareLink);
+    elements.shareImage.addEventListener('click', showImageOptions);
+    elements.shareSystem.addEventListener('click', systemShare);
+    
+    // 图片样式选择
+    elements.styleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            elements.styleBtns.forEach(b => b.classList.remove('active'));
+            e.target.closest('.style-btn').classList.add('active');
+        });
+    });
+    
+    // 图片生成和下载
+    elements.generateImage.addEventListener('click', generateShareImage);
+    elements.downloadImage.addEventListener('click', downloadShareImage);
+    
+    // 点击弹窗外部关闭
+    elements.shareModal.addEventListener('click', (e) => {
+        if (e.target === elements.shareModal) {
+            hideShareModal();
+        }
+    });
 
     // 关于按钮
     elements.aboutBtn.addEventListener('click', showAbout);
@@ -586,13 +622,32 @@ function stopResize() {
     document.body.style.cursor = '';
 }
 
-// 分享功能
-function shareContent() {
+// 显示分享弹窗
+function showShareModal() {
+    elements.shareModal.classList.add('show');
+    // 隐藏图片选项
+    elements.imageOptions.classList.remove('show');
+}
+
+// 隐藏分享弹窗
+function hideShareModal() {
+    elements.shareModal.classList.remove('show');
+    elements.imageOptions.classList.remove('show');
+}
+
+// 显示图片样式选项
+function showImageOptions() {
+    elements.imageOptions.classList.add('show');
+    // 生成默认预览
+    generateShareImage();
+}
+
+// 系统分享
+function systemShare() {
     const shareText = '云笺 - 轻量美观的开源富文本编辑与文本处理工具';
     const shareUrl = 'https://github.com/Youreln/Cloudpad';
     const shareTitle = '云笺 (Cloudpad)';
 
-    // 检查是否支持 Web Share API
     if (navigator.share) {
         navigator.share({
             title: shareTitle,
@@ -601,23 +656,30 @@ function shareContent() {
         })
         .then(() => {
             showToast('分享成功');
+            hideShareModal();
         })
         .catch((error) => {
             // 如果用户取消分享或其他错误，使用备选方案
-            copyShareLink(shareUrl, shareText);
+            copyShareLink();
+            hideShareModal();
         });
     } else {
         // 不支持 Web Share API 的浏览器，使用复制链接的方式
-        copyShareLink(shareUrl, shareText);
+        copyShareLink();
+        hideShareModal();
     }
 }
 
 // 复制分享链接
-function copyShareLink(url, text) {
-    const shareContent = `${text}\n${url}`;
+function copyShareLink() {
+    const shareText = '云笺 - 轻量美观的开源富文本编辑与文本处理工具';
+    const shareUrl = 'https://github.com/Youreln/Cloudpad';
+    const shareContent = `${shareText}\n${shareUrl}`;
+    
     navigator.clipboard.writeText(shareContent)
     .then(() => {
         showToast('链接已复制到剪贴板，可直接分享');
+        hideShareModal();
     })
     .catch(() => {
         // 剪贴板 API 失败，使用传统方法
@@ -632,12 +694,218 @@ function copyShareLink(url, text) {
         try {
             document.execCommand('copy');
             showToast('链接已复制到剪贴板，可直接分享');
+            hideShareModal();
         } catch (error) {
             showToast('复制失败，请手动复制链接');
         } finally {
             document.body.removeChild(textArea);
         }
     });
+}
+
+// 生成分享图片
+function generateShareImage() {
+    const canvas = elements.shareCanvas;
+    const ctx = canvas.getContext('2d');
+    
+    // 获取选中的样式
+    const activeStyle = document.querySelector('.style-btn.active').dataset.style;
+    
+    // 设置画布大小
+    canvas.width = 800;
+    canvas.height = 600;
+    
+    // 清空画布
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 根据样式生成图片
+    switch (activeStyle) {
+        case 'classic':
+            drawClassicStyle(ctx, canvas);
+            break;
+        case 'modern':
+            drawModernStyle(ctx, canvas);
+            break;
+        case 'minimal':
+            drawMinimalStyle(ctx, canvas);
+            break;
+    }
+    
+    showToast('图片生成成功');
+}
+
+// 经典样式
+function drawClassicStyle(ctx, canvas) {
+    // 背景
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#f8fafc');
+    gradient.addColorStop(1, '#e2e8f0');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // 边框
+    ctx.strokeStyle = '#165DFF';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+    
+    // Logo
+    ctx.font = '48px Font Awesome 6 Free';
+    ctx.fillStyle = '#165DFF';
+    ctx.textAlign = 'center';
+    ctx.fillText('\uf0c2', canvas.width / 2, 120);
+    
+    // 标题
+    ctx.font = '28px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.fillText('云笺 (Cloudpad)', canvas.width / 2, 180);
+    
+    // 描述
+    ctx.font = '18px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'center';
+    ctx.fillText('轻量美观的开源富文本编辑与文本处理工具', canvas.width / 2, 220);
+    
+    // 功能列表
+    const features = [
+        '• 富文本编辑',
+        '• 文本清洗',
+        '• 格式转换',
+        '• 一键导出',
+        '• 暗黑模式',
+        '• 响应式布局'
+    ];
+    
+    ctx.font = '16px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#475569';
+    ctx.textAlign = 'center';
+    
+    features.forEach((feature, index) => {
+        ctx.fillText(feature, canvas.width / 2, 280 + index * 30);
+    });
+    
+    // 底部信息
+    ctx.font = '14px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'center';
+    ctx.fillText('github.com/Youreln/Cloudpad', canvas.width / 2, canvas.height - 40);
+}
+
+// 现代样式
+function drawModernStyle(ctx, canvas) {
+    // 背景
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // 顶部条
+    ctx.fillStyle = '#165DFF';
+    ctx.fillRect(0, 0, canvas.width, 40);
+    
+    // Logo
+    ctx.font = '40px Font Awesome 6 Free';
+    ctx.fillStyle = '#165DFF';
+    ctx.textAlign = 'center';
+    ctx.fillText('\uf0c2', canvas.width / 2, 100);
+    
+    // 标题
+    ctx.font = '32px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.textAlign = 'center';
+    ctx.fillText('云笺', canvas.width / 2, 160);
+    
+    // 副标题
+    ctx.font = '18px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'center';
+    ctx.fillText('Cloudpad', canvas.width / 2, 190);
+    
+    // 描述
+    ctx.font = '16px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'center';
+    ctx.fillText('轻量美观的开源富文本编辑与文本处理工具', canvas.width / 2, 230);
+    
+    // 功能卡片
+    const cardWidth = 200;
+    const cardHeight = 80;
+    const cardX = (canvas.width - cardWidth) / 2;
+    
+    features = [
+        { icon: '\uf044', text: '富文本编辑' },
+        { icon: '\uf12d', text: '文本清洗' },
+        { icon: '\uf023', text: '格式转换' },
+        { icon: '\uf0ed', text: '一键导出' }
+    ];
+    
+    features.forEach((feature, index) => {
+        // 卡片背景
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(cardX, 280 + index * 90, cardWidth, cardHeight);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(cardX, 280 + index * 90, cardWidth, cardHeight);
+        
+        // 图标
+        ctx.font = '24px Font Awesome 6 Free';
+        ctx.fillStyle = '#165DFF';
+        ctx.textAlign = 'center';
+        ctx.fillText(feature.icon, cardX + 40, 320 + index * 90);
+        
+        // 文本
+        ctx.font = '16px system-ui, -apple-system, Segoe UI, sans-serif';
+        ctx.fillStyle = '#1e293b';
+        ctx.textAlign = 'left';
+        ctx.fillText(feature.text, cardX + 80, 320 + index * 90);
+    });
+    
+    // 底部链接
+    ctx.font = '14px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#165DFF';
+    ctx.textAlign = 'center';
+    ctx.fillText('github.com/Youreln/Cloudpad', canvas.width / 2, canvas.height - 30);
+}
+
+// 极简样式
+function drawMinimalStyle(ctx, canvas) {
+    // 背景
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Logo
+    ctx.font = '60px Font Awesome 6 Free';
+    ctx.fillStyle = '#165DFF';
+    ctx.textAlign = 'center';
+    ctx.fillText('\uf0c2', canvas.width / 2, canvas.height / 2 - 60);
+    
+    // 标题
+    ctx.font = '36px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#1e293b';
+    ctx.textAlign = 'center';
+    ctx.fillText('云笺', canvas.width / 2, canvas.height / 2 + 20);
+    
+    // 底部链接
+    ctx.font = '16px system-ui, -apple-system, Segoe UI, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.textAlign = 'center';
+    ctx.fillText('github.com/Youreln/Cloudpad', canvas.width / 2, canvas.height / 2 + 80);
+}
+
+// 下载分享图片
+function downloadShareImage() {
+    const canvas = elements.shareCanvas;
+    
+    try {
+        // 创建下载链接
+        const link = document.createElement('a');
+        link.download = '云笺分享_' + new Date().toISOString().slice(0, 10) + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        showToast('图片已下载');
+    } catch (error) {
+        showToast('下载失败，请重试');
+        console.error('下载图片失败:', error);
+    }
 }
 
 // 一键回到顶部

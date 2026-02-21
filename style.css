@@ -485,6 +485,128 @@ body {
     box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
 }
 
+/* 分享弹窗样式 */
+.share-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.share-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--toolbar-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.share-btn:hover {
+    background-color: var(--btn-hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.share-btn i {
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.share-btn span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 图片样式选项 */
+.image-options {
+    display: none;
+    margin-top: 20px;
+}
+
+.image-options.show {
+    display: block;
+}
+
+.image-options h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.style-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.style-btn {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--toolbar-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.style-btn:hover {
+    background-color: var(--btn-hover-bg);
+}
+
+.style-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 预览区域 */
+.preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--editor-bg);
+    min-height: 300px;
+}
+
+.share-canvas {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+/* 图片操作按钮 */
+.image-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.image-actions .modal-btn {
+    flex: 1;
+    max-width: 200px;
+}
+
 /* 滚动条美化 */
 ::-webkit-scrollbar {
     width: 8px;
