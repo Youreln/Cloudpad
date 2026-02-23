@@ -409,12 +409,26 @@
                     </label>
                 </div>
                 <div class="form-note">
-                    <p><strong>使用说明:</strong></p>
+                    <p><strong>⚠️ 重要提示:</strong></p>
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 10px; margin: 10px 0;">
+                        <p style="margin: 0 0 10px 0; color: #856404;"><strong>浏览器安全限制</strong></p>
+                        <p style="margin: 0; font-size: 13px; color: #856404;">
+                            由于浏览器的CORS（跨域资源共享）安全策略，纯前端应用无法直接访问坚果云的WebDAV服务。
+                            坚果云服务器没有配置允许跨域访问，浏览器会阻止此类请求。
+                        </p>
+                    </div>
+                    <p><strong>替代方案:</strong></p>
+                    <ol>
+                        <li><strong>使用桌面客户端:</strong> 下载坚果云桌面客户端进行文件同步</li>
+                        <li><strong>使用浏览器扩展:</strong> 安装支持WebDAV的浏览器扩展（如Floccus）</li>
+                        <li><strong>使用本地服务器:</strong> 在本地搭建代理服务器转发请求</li>
+                        <li><strong>仅使用本地保存:</strong> 勾选"本地保存"选项，数据保存在浏览器本地</li>
+                    </ol>
+                    <p><strong>坚果云WebDAV设置（供参考）:</strong></p>
                     <ol>
                         <li>登录坚果云官网，进入「账户信息」→「安全选项」</li>
                         <li>在「第三方应用管理」中添加应用密码</li>
-                        <li>在坚果云中创建 "cloudpad" 文件夹</li>
-                        <li>服务器地址格式: https://dav.jianguoyun.com/dav/cloudpad/</li>
+                        <li>服务器地址: https://dav.jianguoyun.com/dav/</li>
                     </ol>
                 </div>
                 <div class="form-group">

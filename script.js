@@ -1294,6 +1294,11 @@ function deleteFile(fileName) {
 function webdavListFiles(url, username, password) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        
+        // 检测可能的CORS问题
+        console.log('准备发送WebDAV请求到:', url);
+        console.log('注意: 如果遇到CORS错误，这是正常的浏览器安全行为');
+        
         xhr.open('PROPFIND', url, true);
         xhr.setRequestHeader('Authorization', 'Basic ' + btoa(username + ':' + password));
         xhr.setRequestHeader('Depth', '1');
@@ -1333,6 +1338,9 @@ function webdavListFiles(url, username, password) {
                 reject(new Error('权限不足，请检查服务器地址和文件夹权限'));
             } else if (xhr.status === 404) {
                 reject(new Error('服务器地址不存在，请检查地址是否正确'));
+            } else if (xhr.status === 0) {
+                // 状态码为0通常表示CORS错误或网络错误
+                reject(new Error('CORS错误或网络错误: 浏览器可能阻止了跨域请求'));
             } else {
                 reject(new Error('WebDAV 列表失败: ' + xhr.status + ' ' + xhr.statusText));
             }
@@ -1340,7 +1348,13 @@ function webdavListFiles(url, username, password) {
         
         xhr.onerror = function() {
             console.error('WebDAV 连接错误');
-            reject(new Error('无法连接到服务器，请检查网络连接和服务器地址'));
+            // 提供更详细的错误信息
+            const errorMsg = '无法连接到服务器。可能的原因:\n' +
+                '1. CORS跨域限制（最常见）\n' +
+                '2. 网络连接问题\n' +
+                '3. 服务器地址错误\n' +
+                '建议: 使用本地保存功能或坚果云桌面客户端';
+            reject(new Error(errorMsg));
         };
         
         xhr.ontimeout = function() {
